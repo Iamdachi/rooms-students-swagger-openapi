@@ -1,10 +1,13 @@
 openapi: 3.0.3
 info:
-  title: Student & Room Management API
+  title: Student-Room Management API
   version: 1.0.0
   description: |
-    REST API for managing students and rooms.  
-    Supports CRUD for both entities, listing students in a room, and moving a student between rooms.
+    REST API for managing students and rooms.
+    - CRUD for Students
+    - CRUD for Rooms
+    - Get all students in a specific room
+    - Move a student to another room
 
 servers:
   - url: https://api.example.com/v1
@@ -15,50 +18,45 @@ paths:
       summary: List all students
       responses:
         "200":
-          description: A list of students
+          description: List of students
           content:
             application/json:
               schema:
                 type: array
-                items: 
-                  $ref: "#/components/schemas/Student"
+                items: { $ref: "#/components/schemas/Student" }
               example:
+                - id: 0
+                  name: "Peggy Ryan"
+                  sex: "F"
+                  birthday: "2011-08-22"
+                  room: 473
                 - id: 1
-                  name: "Alice"
-                  age: 20
-                  roomId: 2
-                - id: 2
-                  name: "Bob"
-                  age: 21
-                  roomId: null
+                  name: "Christian Bush"
+                  sex: "M"
+                  birthday: "2004-01-07"
+                  room: 743
     post:
-      summary: Create a new student
+      summary: Create a student
       requestBody:
         required: true
         content:
           application/json:
-            schema:
-              $ref: "#/components/schemas/StudentCreate"
+            schema: { $ref: "#/components/schemas/StudentCreate" }
             example:
-              name: "Charlie"
-              age: 19
-              roomId: 3
+              name: "Alice Carter"
+              sex: "F"
+              birthday: "2010-03-15"
+              room: 1
       responses:
         "201":
           description: Student created
           content:
             application/json:
-              schema:
-                $ref: "#/components/schemas/Student"
-              example:
-                id: 3
-                name: "Charlie"
-                age: 19
-                roomId: 3
+              schema: { $ref: "#/components/schemas/Student" }
         "400":
           $ref: "#/components/responses/BadRequest"
 
-  /students/{studentId}:
+  /students/{id}:
     get:
       summary: Get a student by ID
       parameters:
@@ -68,13 +66,7 @@ paths:
           description: Student found
           content:
             application/json:
-              schema:
-                $ref: "#/components/schemas/Student"
-              example:
-                id: 1
-                name: "Alice"
-                age: 20
-                roomId: 2
+              schema: { $ref: "#/components/schemas/Student" }
         "404":
           $ref: "#/components/responses/NotFound"
     put:
@@ -85,24 +77,15 @@ paths:
         required: true
         content:
           application/json:
-            schema:
-              $ref: "#/components/schemas/StudentUpdate"
-            example:
-              name: "Alice Updated"
-              age: 21
-              roomId: 4
+            schema: { $ref: "#/components/schemas/StudentUpdate" }
       responses:
         "200":
-          description: Student updated
+          description: Updated student
           content:
             application/json:
-              schema:
-                $ref: "#/components/schemas/Student"
-              example:
-                id: 1
-                name: "Alice Updated"
-                age: 21
-                roomId: 4
+              schema: { $ref: "#/components/schemas/Student" }
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "404":
           $ref: "#/components/responses/NotFound"
     delete:
@@ -115,47 +98,65 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
-  /rooms:
-    get:
-      summary: List all rooms
-      responses:
-        "200":
-          description: A list of rooms
-          content:
-            application/json:
-              schema:
-                type: array
-                items: 
-                  $ref: "#/components/schemas/Room"
-              example:
-                - id: 1
-                  name: "Room A"
-                - id: 2
-                  name: "Room B"
-    post:
-      summary: Create a new room
+  /students/{id}/move:
+    patch:
+      summary: Move student to another room
+      parameters:
+        - $ref: "#/components/parameters/StudentId"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RoomCreate"
+              type: object
+              required: [room]
+              properties:
+                room:
+                  type: integer
+                  description: Target room ID
             example:
-              name: "Room C"
+              room: 2
+      responses:
+        "200":
+          description: Student moved successfully
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Student" }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /rooms:
+    get:
+      summary: List all rooms
+      responses:
+        "200":
+          description: List of rooms
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Room" }
+    post:
+      summary: Create a room
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RoomCreate" }
+            example:
+              name: "Room #10"
       responses:
         "201":
           description: Room created
           content:
             application/json:
-              schema:
-                $ref: "#/components/schemas/Room"
-              example:
-                id: 3
-                name: "Room C"
+              schema: { $ref: "#/components/schemas/Room" }
         "400":
           $ref: "#/components/responses/BadRequest"
 
-  /rooms/{roomId}:
+  /rooms/{id}:
     get:
       summary: Get a room by ID
       parameters:
@@ -165,11 +166,7 @@ paths:
           description: Room found
           content:
             application/json:
-              schema:
-                $ref: "#/components/schemas/Room"
-              example:
-                id: 2
-                name: "Room B"
+              schema: { $ref: "#/components/schemas/Room" }
         "404":
           $ref: "#/components/responses/NotFound"
     put:
@@ -180,20 +177,15 @@ paths:
         required: true
         content:
           application/json:
-            schema:
-              $ref: "#/components/schemas/RoomCreate"
-            example:
-              name: "Room B Updated"
+            schema: { $ref: "#/components/schemas/RoomUpdate" }
       responses:
         "200":
-          description: Room updated
+          description: Updated room
           content:
             application/json:
-              schema:
-                $ref: "#/components/schemas/Room"
-              example:
-                id: 2
-                name: "Room B Updated"
+              schema: { $ref: "#/components/schemas/Room" }
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "404":
           $ref: "#/components/responses/NotFound"
     delete:
@@ -206,77 +198,54 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
-  /rooms/{roomId}/students:
+  /rooms/{id}/students:
     get:
-      summary: List all students in a specific room
+      summary: Get all students in a specific room
       parameters:
         - $ref: "#/components/parameters/RoomId"
       responses:
         "200":
-          description: Students in the room
+          description: List of students in the room
           content:
             application/json:
               schema:
                 type: array
-                items: 
-                  $ref: "#/components/schemas/Student"
-              example:
-                - id: 1
-                  name: "Alice"
-                  age: 20
-                  roomId: 2
-        "404":
-          $ref: "#/components/responses/NotFound"
-
-  /students/{studentId}/move:
-    post:
-      summary: Move a student to another room
-      parameters:
-        - $ref: "#/components/parameters/StudentId"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [roomId]
-              properties:
-                roomId:
-                  type: integer
-                  example: 3
-      responses:
-        "200":
-          description: Student moved successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Student"
-              example:
-                id: 1
-                name: "Alice"
-                age: 20
-                roomId: 3
-        "400":
-          $ref: "#/components/responses/BadRequest"
+                items: { $ref: "#/components/schemas/Student" }
         "404":
           $ref: "#/components/responses/NotFound"
 
 components:
   parameters:
     StudentId:
-      name: studentId
+      name: id
       in: path
       required: true
-      schema:
-        type: integer
-      description: The ID of the student
+      schema: { type: integer }
+      description: Student ID
     RoomId:
-      name: roomId
+      name: id
       in: path
       required: true
-      schema:
-        type: integer
-      description: The ID of the room
+      schema: { type: integer }
+      description: Room ID
+
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+          example:
+            code: 404
+            message: "Student not found"
+    BadRequest:
+      description: Invalid input
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+          example:
+            code: 400
+            message: "Invalid room ID"
 
   schemas:
     Student:
@@ -284,58 +253,44 @@ components:
       properties:
         id: { type: integer }
         name: { type: string }
-        age: { type: integer }
-        roomId: { type: integer, nullable: true }
+        sex: { type: string, enum: [M, F] }
+        birthday: { type: string, format: date }
+        room: { type: integer }
+      required: [id, name, sex, birthday, room]
     StudentCreate:
       type: object
-      required: [name, age]
       properties:
         name: { type: string }
-        age: { type: integer }
-        roomId: { type: integer, nullable: true }
+        sex: { type: string, enum: [M, F] }
+        birthday: { type: string, format: date }
+        room: { type: integer }
+      required: [name, sex, birthday, room]
     StudentUpdate:
       type: object
       properties:
         name: { type: string }
-        age: { type: integer }
-        roomId: { type: integer, nullable: true }
+        sex: { type: string, enum: [M, F] }
+        birthday: { type: string, format: date }
+        room: { type: integer }
     Room:
       type: object
       properties:
         id: { type: integer }
         name: { type: string }
+      required: [id, name]
     RoomCreate:
       type: object
-      required: [name]
       properties:
         name: { type: string }
-
-  responses:
-    BadRequest:
-      description: Bad request - invalid input
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/Error"
-          example:
-            error: "ValidationError"
-            message: "Age must be greater than 0."
-    NotFound:
-      description: Resource not found
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/Error"
-          example:
-            error: "NotFound"
-            message: "Student with ID 999 not found."
-
-  schemas:
+      required: [name]
+    RoomUpdate:
+      type: object
+      properties:
+        name: { type: string }
     Error:
       type: object
       properties:
-        error:
-          type: string
-        message:
-          type: string
+        code: { type: integer }
+        message: { type: string }
+      required: [code, message]
 
