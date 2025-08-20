@@ -10,7 +10,7 @@ info:
     - Move a student to another room
 
 servers:
-  - url: https://api.example.com/v1
+  - url: https://api.example.com/api/v1
 
 paths:
   /students:
