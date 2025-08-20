@@ -14,27 +14,48 @@ servers:
 
 paths:
   /students:
+    /students:
     get:
       summary: List all students
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, minimum: 1, default: 1 }
+          description: Page number
+        - in: query
+          name: limit
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+          description: Items per page
       responses:
         "200":
-          description: List of students
+          description: Paginated list of students
           content:
             application/json:
               schema:
-                type: array
-                items: { $ref: "#/components/schemas/Student" }
+                type: object
+                properties:
+                  total: { type: integer, description: Total number of students }
+                  page: { type: integer }
+                  limit: { type: integer }
+                  items:
+                    type: array
+                    items: { $ref: "#/components/schemas/Student" }
               example:
-                - id: 0
-                  name: "Peggy Ryan"
-                  sex: "F"
-                  birthday: "2011-08-22"
-                  room: 473
-                - id: 1
-                  name: "Christian Bush"
-                  sex: "M"
-                  birthday: "2004-01-07"
-                  room: 743
+                total: 53
+                page: 1
+                limit: 20
+                items:
+                  - id: 0
+                    name: "Peggy Ryan"
+                    sex: "F"
+                    birthday: "2011-08-22"
+                    room: 473
+                  - id: 1
+                    name: "Christian Bush"
+                    sex: "M"
+                    birthday: "2004-01-07"
+                    room: 743
+
     post:
       summary: Create a student
       requestBody:
@@ -130,14 +151,38 @@ paths:
   /rooms:
     get:
       summary: List all rooms
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, minimum: 1, default: 1 }
+          description: Page number
+        - in: query
+          name: limit
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+          description: Items per page
       responses:
         "200":
-          description: List of rooms
+          description: Paginated list of rooms
           content:
             application/json:
               schema:
-                type: array
-                items: { $ref: "#/components/schemas/Room" }
+                type: object
+                properties:
+                  total: { type: integer, description: Total number of rooms }
+                  page: { type: integer }
+                  limit: { type: integer }
+                  items:
+                    type: array
+                    items: { $ref: "#/components/schemas/Room" }
+              example:
+                total: 12
+                page: 1
+                limit: 20
+                items:
+                  - id: 1
+                    name: "Room #10"
+                  - id: 2
+                    name: "Room #11"
     post:
       summary: Create a room
       requestBody:
