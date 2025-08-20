@@ -14,8 +14,8 @@ servers:
 
 paths:
   /students:
-    /students:
     get:
+      tags: [Students]
       summary: List all students
       parameters:
         - in: query
@@ -57,6 +57,7 @@ paths:
                     room: 743
 
     post:
+      tags: [Students]
       summary: Create a student
       requestBody:
         required: true
@@ -79,6 +80,7 @@ paths:
 
   /students/{id}:
     get:
+      tags: [Students]
       summary: Get a student by ID
       parameters:
         - $ref: "#/components/parameters/StudentId"
@@ -91,6 +93,7 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
     put:
+      tags: [Students]
       summary: Update a student
       parameters:
         - $ref: "#/components/parameters/StudentId"
@@ -110,6 +113,7 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
     delete:
+      tags: [Students]
       summary: Delete a student
       parameters:
         - $ref: "#/components/parameters/StudentId"
@@ -121,6 +125,7 @@ paths:
 
   /students/{id}/move:
     patch:
+      tags: [Students]
       summary: Move student to another room
       parameters:
         - $ref: "#/components/parameters/StudentId"
@@ -150,6 +155,7 @@ paths:
 
   /rooms:
     get:
+      tags: [Rooms]
       summary: List all rooms
       parameters:
         - in: query
@@ -184,6 +190,7 @@ paths:
                   - id: 2
                     name: "Room #11"
     post:
+      tags: [Rooms]
       summary: Create a room
       requestBody:
         required: true
@@ -203,6 +210,7 @@ paths:
 
   /rooms/{id}:
     get:
+      tags: [Rooms]
       summary: Get a room by ID
       parameters:
         - $ref: "#/components/parameters/RoomId"
@@ -215,6 +223,7 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
     put:
+      tags: [Rooms]
       summary: Update a room
       parameters:
         - $ref: "#/components/parameters/RoomId"
@@ -234,6 +243,7 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
     delete:
+      tags: [Rooms]
       summary: Delete a room
       parameters:
         - $ref: "#/components/parameters/RoomId"
@@ -245,6 +255,7 @@ paths:
 
   /rooms/{id}/students:
     get:
+      tags: [Rooms]
       summary: Get all students in a specific room
       parameters:
         - $ref: "#/components/parameters/RoomId"
